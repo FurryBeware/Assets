@@ -10,12 +10,17 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          fetch-depth: 0
         
       - name: Checkout main repo
         uses: actions/checkout@v3
         with:
           repository: FurryBeware/FurryBeware
           path: output
+          persist-credentials: false
+          fetch-depth: 0
         
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.3.0
