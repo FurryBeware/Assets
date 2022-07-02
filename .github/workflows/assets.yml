@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        
+      - name: Checkout main repo
+        uses: actions/checkout@v3
+        with:
+          repository: FurryBeware/FurryBeware
+          path: output
+        
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.3.0
+        
+      - name: Install SVGExport
+        run: npm install svgexport -g
+        
+      - name: Export SVGs to PNGs
+        run: |
+          svgexport inkscape/furrybeware.svg output/packages/frontend/icons/furrybeware.png 1024:1024
+          svgexport inkscape/furrybeware-text.svg output/packages/frontend/icons/furrybeware-text.png 1024:205
+          
+      - name: Push to main repo
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'output'
+          destination-github-username: 'FurryBeware'
+          destination-repository-name: 'FurryBeware'
+          user-email: noreply@relms.dev
+          user-name: 'FurryBeware Assets CI'
+          commit-message: "ci: Automated assets generation from Assets repo"
+          target-branch: main
